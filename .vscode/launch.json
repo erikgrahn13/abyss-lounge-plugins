@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Black Lounge",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.buildDirectory}/Black_Lounge/Black_Lounge",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Black_Lounge",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "symbolLoadInfo": {
+                "loadAll": false,
+                "exceptionList": "*Example*;*singularity*;*editorhost*"
+            },
+            "setupCommands": [
+                { "text": "set debuginfod enabled off", "ignoreFailures": true }
+            ]
+        },
+        {
+            "name": "FIR tmp",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.buildDirectory}/Black_Lounge/Black_Lounge",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Black_Lounge",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "symbolLoadInfo": {
+                "loadAll": false,
+                "exceptionList": "*Example*;*singularity*;*editorhost*"
+            },
+            "setupCommands": [
+                { "text": "set debuginfod enabled off", "ignoreFailures": true }
+            ]
+        }
+
+    ]
+}

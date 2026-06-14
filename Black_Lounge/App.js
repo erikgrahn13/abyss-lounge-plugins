@@ -17,7 +17,7 @@ export default function App() {
       ctx.font = "24px sans-serif";
       ctx.textAlign = "center"
       ctx.fillText("BLACK LOUNGE AMP", width / 2, 40);
-      ctx.drawImage("./background.png", width / 2 - 125, height / 2 - 125, 250, 250);
+      // ctx.drawImage("./background.png", width / 2 - 125, height / 2 - 125, 250, 250);
     },
     children: [
       DeathMetalKnob({ x: width / 5, y: height / 1.5, size: 80, parameterId: 13 }),

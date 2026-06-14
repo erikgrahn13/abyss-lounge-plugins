@@ -2,11 +2,11 @@
 
 #include "../SingularityPlugin.h"
 #include "Amp.h"
-#include "embedded/Black_Lounge_generated.h"
 
 class BlackLounge {
 public:
     static constexpr bool isInstrument = false;
+    static constexpr bool isResizable = false;
 
     static auto getParameters()
     {
@@ -16,7 +16,7 @@ public:
     }
 
     void prepare(double sampleRate, int maxBlockSize) {
-        blackLoungeAmp_ = std::make_unique<Amp>(singularity::generated::abyss_nam.data, singularity::generated::abyss_nam.size);
+        // blackLoungeAmp_ = std::make_unique<Amp>(singularity::generated::abyss_nam.data, singularity::generated::abyss_nam.size);
     }
 
     template<typename SampleType>

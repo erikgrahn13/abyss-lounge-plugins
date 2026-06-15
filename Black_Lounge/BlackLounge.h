@@ -2,6 +2,7 @@
 
 #include "../SingularityPlugin.h"
 #include "Amp.h"
+#include "generated_data_resources.h"
 
 class BlackLounge {
 public:
@@ -17,6 +18,7 @@ public:
 
     void prepare(double sampleRate, int maxBlockSize) {
         // blackLoungeAmp_ = std::make_unique<Amp>(singularity::generated::abyss_nam.data, singularity::generated::abyss_nam.size);
+        blackLoungeAmp_ = std::make_unique<Amp>(singularity_data::abyss_nam.data, singularity_data::abyss_nam.size);
     }
 
     template<typename SampleType>

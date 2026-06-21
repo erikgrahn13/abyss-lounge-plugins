@@ -45,12 +45,12 @@ export function DeathMetalKnob({ x, y, size = 80, parameterId, padding = 10, bac
 
             // Value arc — blood red HDR bloom
             ctx.save();
-            ctx.bloom = 0.6;
+            ctx.bloom = 1.2;
             ctx.lineWidth   = lineW;
             ctx.lineCap     = "round";
-            ctx.strokeStyle = "color(srgb-linear 1.2 1.1 1.0 1.0)";
-            ctx.shadowColor  = "color(srgb-linear 0.6 0.0 0.0 1.0)";
-            ctx.shadowBlur   = 5;
+            ctx.strokeStyle = "color(srgb-linear 4.0 1.1 1.0 1.0)";
+            ctx.shadowColor = "color(srgb-linear 3.5 0.0 0.0 1.0)";
+            ctx.shadowBlur   = 8;
             ctx.beginPath();
             ctx.arc(cx, cy, adjustedR, startAngle, currentAngle, false);
             ctx.stroke();

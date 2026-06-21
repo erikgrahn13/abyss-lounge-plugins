@@ -9,9 +9,9 @@ function valueToAngle(val) {
     return startAngle + val * (endAngle - startAngle);
 }
 
-export function DeathMetalKnob({ x, y, size = 80, parameterId, padding = 10 }) {
+export function DeathMetalKnob({ x, y, size = 80, parameterId, padding = 10, backgroundColor = "#000000" }) {
     return Knob({
-        x, y, size, parameterId,
+        x, y, size, parameterId, backgroundColor,
         draw: (ctx, { value, size }) => {
             const radius        = size / 2;
             const cx            = radius;
@@ -23,33 +23,45 @@ export function DeathMetalKnob({ x, y, size = 80, parameterId, padding = 10 }) {
 
             ctx.save();
 
-            // Background
-            ctx.fillStyle = "#000000";
-            ctx.fillRect(0, 0, size, size);
-
             // Knob body
             ctx.beginPath();
             ctx.arc(cx, cy, drawRadius, 0, Math.PI * 2, true);
-            ctx.fillStyle = "#000000";
+            ctx.fillStyle = backgroundColor;
             ctx.fill();
 
             ctx.lineWidth = lineW;
             ctx.lineCap   = "round";
 
-            // Grey track (full range)
-            ctx.strokeStyle = "#808080";
+            // Grey track (full range) — dim HDR so it glows faintly
+            ctx.save();
+            ctx.bloom = 0.3;
+            ctx.strokeStyle = "color(srgb-linear 0.08 0.0 0.0 1.0)";
+            ctx.shadowColor  = "color(srgb-linear 0.15 0.0 0.0 1.0)";
+            ctx.shadowBlur   = 3;
             ctx.beginPath();
             ctx.arc(cx, cy, adjustedR, startAngle, endAngle, false);
             ctx.stroke();
+            ctx.restore();
 
-            // White value arc (use the same angle convention as the grey track)
-            ctx.strokeStyle = "#ffffff";
+            // Value arc — blood red HDR bloom
+            ctx.save();
+            ctx.bloom = 0.6;
+            ctx.lineWidth   = lineW;
+            ctx.lineCap     = "round";
+            ctx.strokeStyle = "color(srgb-linear 1.2 1.1 1.0 1.0)";
+            ctx.shadowColor  = "color(srgb-linear 0.6 0.0 0.0 1.0)";
+            ctx.shadowBlur   = 5;
             ctx.beginPath();
             ctx.arc(cx, cy, adjustedR, startAngle, currentAngle, false);
             ctx.stroke();
+            ctx.restore();
 
-            // Pentagram + inner circle (rotates with value)
-            ctx.strokeStyle = "#ffffff";
+            // Pentagram + inner circle (rotates with value) — cold white HDR
+            ctx.save();
+            ctx.bloom = 0.6;
+            ctx.strokeStyle = "color(srgb-linear 1.2 1.1 1.0 1.0)";
+            ctx.shadowColor  = "color(srgb-linear 0.6 0.0 0.0 1.0)";
+            ctx.shadowBlur   = 5;
             ctx.lineCap     = "butt";
             ctx.lineWidth   = 2;
 
@@ -68,16 +80,19 @@ export function DeathMetalKnob({ x, y, size = 80, parameterId, padding = 10 }) {
             ctx.beginPath();
             ctx.arc(cx, cy, drawRadius * 0.8 * 0.9, 0, Math.PI * 2);
             ctx.stroke();
+            ctx.restore();
 
-            // Cross / pointer (rotates with value)
-            // Rotate local points around (cx, cy) by currentAngle manually:
-            //   screen = (cx + lx*cos(a) - ly*sin(a), cy + lx*sin(a) + ly*cos(a))
+            // Cross / pointer — intense red HDR
             const cosA = Math.cos(currentAngle);
             const sinA = Math.sin(currentAngle);
             const rot = (lx, ly) => [cx + lx * cosA - ly * sinA,
                                      cy + lx * sinA + ly * cosA];
 
-            ctx.strokeStyle = "#ffffff";
+            ctx.save();
+            ctx.bloom = 0.6;
+            ctx.strokeStyle = "color(srgb-linear 1.2 1.1 1.0 1.0)";
+            ctx.shadowColor  = "color(srgb-linear 0.6 0.0 0.0 1.0)";
+            ctx.shadowBlur   = 5;
             ctx.lineCap     = "butt";
             ctx.lineWidth   = lineW;
 
@@ -94,6 +109,7 @@ export function DeathMetalKnob({ x, y, size = 80, parameterId, padding = 10 }) {
             ctx.moveTo(x2, y2);
             ctx.lineTo(x3, y3);
             ctx.stroke();
+            ctx.restore();
 
             ctx.restore();
         },

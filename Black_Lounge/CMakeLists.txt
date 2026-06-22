@@ -17,6 +17,8 @@ singularity_create_plugin(
         mb-forever-raw.regular.ttf
     DATA_RESOURCES
         abyss.nam
+        "../nam/jcm900 peter reamp.nam"
+        "../nam/GP-OD 808  25Drive 06Tone 10Lvl.nam"
         800_4x_2_02_MIX_RAW_V2.wav
 )
 
@@ -24,6 +26,4 @@ target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
     Amp
-    IR
 )
-

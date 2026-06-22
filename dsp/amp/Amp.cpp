@@ -1,54 +1,32 @@
 #include "Amp.h"
+#include "NAM/get_dsp.h"
 #include <iostream>
 
 Amp::Amp(const unsigned char *ampData, const int ampDataSize) : mAmpData(ampData), mAmpDataSize(ampDataSize)
 {
+    initNam();
+}
 
+Amp::Amp(const unsigned char *ampData, const int ampDataSize, const uint8_t* irData, int irSize) : mAmpData(ampData), mAmpDataSize(ampDataSize)
+{
+    initNam();
+    ir_ = std::make_unique<IR>(irData, irSize);
+}
+
+Amp::Amp(const unsigned char *ampData, const int ampDataSize, const std::string& irFilename) : mAmpData(ampData), mAmpDataSize(ampDataSize)
+{
+    initNam();
+    ir_ = std::make_unique<IR>(irFilename);
+}
+
+void Amp::initNam()
+{
     std::string json_str(reinterpret_cast<const char *>(mAmpData), static_cast<size_t>(mAmpDataSize));
-
     auto j = nlohmann::json::parse(json_str);
     nam::verify_config_version(j["version"]);
-
-    auto architecture = j["architecture"];
-    nlohmann::json config = j["config"];
-
-    std::vector<float> weights;
-    if (j.find("weights") != j.end())
-    {
-        auto weight_list = j["weights"];
-        for (auto it = weight_list.begin(); it != weight_list.end(); ++it)
-            weights.push_back(*it);
-    }
-    else
-        throw std::runtime_error("Corrupted model file is missing weights.");
-
-    nam::dspData returnedConfig;
-    // Assign values to returnedConfig
-    returnedConfig.version = j["version"];
-    returnedConfig.architecture = j["architecture"];
-    returnedConfig.config = j["config"];
-    returnedConfig.metadata = j["metadata"];
-    returnedConfig.weights = weights;
-    if (j.find("sample_rate") != j.end())
-        returnedConfig.expected_sample_rate = j["sample_rate"];
-    else
-    {
-        returnedConfig.expected_sample_rate = -1.0;
-    }
-
-    /*Copy to a new dsp_config object for get_dsp below,
-    since not sure if params actually get modified as being non-const references on some
-    model constructors inside get_dsp(dsp_config& conf).
-    We need to return unmodified version of dsp_config via returnedConfig.*/
-    nam::dspData conf = returnedConfig;
-
-    mNamModel = get_dsp(conf);
-
+    mNamModel = nam::get_dsp(j);
     if (!mNamModel)
-    {
-        std::cout << "Nam FAILED!!!" << std::endl;
-        exit(0);
-    }
+        throw std::runtime_error("NAM get_dsp returned null");
 }
 
 Amp::~Amp()
@@ -59,6 +37,12 @@ void Amp::prepare()
 {
 }
 
+void Amp::resetAndPrewarm(double sampleRate, int maxBlockSize)
+{
+    if (mNamModel)
+        mNamModel->ResetAndPrewarm(sampleRate, maxBlockSize);
+}
+
 template<typename SampleType>
 void Amp::process(const SampleType* input, SampleType* output, int numSamples)
 {
@@ -67,16 +51,24 @@ void Amp::process(const SampleType* input, SampleType* output, int numSamples)
     if constexpr (std::is_same_v<SampleType, NAM_SAMPLE>)
     {
         // same underlying sample type: forward directly (drop const if needed)
-        mNamModel->process(const_cast<NAM_SAMPLE*>(reinterpret_cast<const NAM_SAMPLE*>(input)),
-                           reinterpret_cast<NAM_SAMPLE*>(output),
-                           numSamples);
+        NAM_SAMPLE* inputPtr = const_cast<NAM_SAMPLE*>(reinterpret_cast<const NAM_SAMPLE*>(input));
+        NAM_SAMPLE* outputPtr = reinterpret_cast<NAM_SAMPLE*>(output);
+        mNamModel->process(&inputPtr, &outputPtr, numSamples);
+
+        if (ir_)
+            ir_->process(output, output, numSamples);
+
+        for (int i = 0; i < numSamples; ++i)
+            output[i] *= 0.1f;
     }
     else
     {
         // convert to NAM_SAMPLE, process, convert back
         std::vector<NAM_SAMPLE> in(numSamples), out(numSamples);
         for (int i = 0; i < numSamples; ++i) in[i] = static_cast<NAM_SAMPLE>(input[i]);
-        mNamModel->process(in.data(), out.data(), numSamples);
+        NAM_SAMPLE* inPtr = in.data();
+        NAM_SAMPLE* outPtr = out.data();
+        mNamModel->process(&inPtr, &outPtr, numSamples);
         for (int i = 0; i < numSamples; ++i) output[i] = static_cast<SampleType>(out[i]);
     }
 }

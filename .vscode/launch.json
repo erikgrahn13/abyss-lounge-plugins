@@ -8,7 +8,7 @@
             "name": "Black Lounge",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${command:cmake.buildDirectory}/Black_Lounge/Black_Lounge",
+            "program": "${command:cmake.buildDirectory}/Black_Lounge/out/APP/Debug/Black_Lounge",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/Black_Lounge",

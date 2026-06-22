@@ -1,6 +1,6 @@
 FetchContent_Declare(
     nam
-    URL https://github.com/sdatkinson/NeuralAmpModelerCore/archive/refs/tags/v0.2.0.zip
+    URL https://github.com/sdatkinson/NeuralAmpModelerCore/archive/refs/tags/v0.5.3.zip
     SOURCE_SUBDIR IGNORE
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     EXCLUDE_FROM_ALL
@@ -25,27 +25,3 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(nlohmann-json)
-
-set(DEPENDENCY_FILES
-    ${nam_SOURCE_DIR}/NAM/get_dsp.cpp
-    ${nam_SOURCE_DIR}/NAM/dsp.cpp
-    ${nam_SOURCE_DIR}/NAM/lstm.cpp
-    ${nam_SOURCE_DIR}/NAM/convnet.cpp
-    ${nam_SOURCE_DIR}/NAM/wavenet.cpp
-    ${nam_SOURCE_DIR}/NAM/util.cpp
-    ${nam_SOURCE_DIR}/NAM/activations.cpp
-)
-
-add_library(nam_dependency STATIC ${DEPENDENCY_FILES})
-set_target_properties(nam_dependency PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
-target_compile_definitions(nam_dependency
-    PUBLIC
-    NAM_SAMPLE_FLOAT
-)
-
-target_include_directories(nam_dependency SYSTEM PUBLIC
-    ${nam_SOURCE_DIR}
-    ${eigen_SOURCE_DIR}
-    ${nlohmann-json_SOURCE_DIR}
-)

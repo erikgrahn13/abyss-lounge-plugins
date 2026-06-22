@@ -12,7 +12,9 @@ singularity_create_plugin(
     FORMATS APP VST3
     PLUGIN_CLASS BlackLounge
     PLUGIN_CLASS_HEADER "BlackLounge.h"
-    RESOURCES background.png
+    RESOURCES
+        background.png
+        mb-forever-raw.regular.ttf
     DATA_RESOURCES
         abyss.nam
         800_4x_2_02_MIX_RAW_V2.wav

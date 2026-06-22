@@ -28,12 +28,12 @@ export default function App() {
           // Side ornaments — HDR glow
           ctx.save();
           ctx.bloom = 1.2;
-          ctx.font = "bold 22px serif";
+          ctx.font = "bold 22px mb-forever-raw.regular.ttf";
           ctx.fillStyle = "color(srgb-linear 2.0 0.0 0.0 1.0)";
           ctx.shadowColor = "color(srgb-linear 4.0 0.0 0.0 1.0)";
           ctx.shadowBlur = 18;
-          ctx.fillText("⸸", 22, 46);
-          ctx.fillText("⸸", width - 38, 46);
+          ctx.fillText("(", 22, 46);
+          ctx.fillText(")", width - 38, 46);
           ctx.restore();
 
           // Horizontal rule flanking title
@@ -50,7 +50,7 @@ export default function App() {
           // Title — HDR bloom glow
           ctx.save();
           ctx.bloom = 1.8;
-          ctx.font = "bold 30px serif";
+          ctx.font = "bold 30px mb-forever-raw.regular.ttf";
           ctx.textAlign = "center";
           ctx.fillStyle = "color(srgb-linear 1.8 1.4 1.1 1.0)";
           ctx.shadowColor = "color(srgb-linear 6.0 0.0 0.0 1.0)";
@@ -61,7 +61,7 @@ export default function App() {
           // Subtitle spaced letters
           ctx.save();
           ctx.bloom = 0.6;
-          ctx.font = "10px monospace";
+          ctx.font = "10px mb-forever-raw.regular.ttf";
           ctx.textAlign = "center";
           ctx.fillStyle = "color(srgb-linear 0.6 0.0 0.0 1.0)";
           ctx.shadowColor = "color(srgb-linear 1.0 0.0 0.0 1.0)";
@@ -153,12 +153,12 @@ export default function App() {
           // Knob labels
           ctx.save();
           ctx.bloom = 0.5;
-          ctx.font = "bold 10px monospace";
+          ctx.font = "bold 20px mb-forever-raw.regular.ttf";
           ctx.textAlign = "center";
           ctx.fillStyle = "color(srgb-linear 0.8 0.6 0.5 1.0)";
           ctx.shadowColor = "color(srgb-linear 1.5 0.0 0.0 1.0)";
           ctx.shadowBlur = 6;
-          const labels = ["GAIN", "DRIVE", "MASTER"];
+          const labels = ["DENOISER", "GAIN", "VOLUME"];
           for (let i = 0; i < labels.length; i++) {
             const x = gap + knobSize / 2 + i * (gap + knobSize);
             ctx.fillText(labels[i], x, 153);

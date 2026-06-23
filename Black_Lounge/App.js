@@ -11,7 +11,7 @@ export default function App() {
   const sx = width / 800;   // 0.75  — horizontal scale factor
   const sy = height / 600;  // 0.667 — vertical scale factor
 
-  const headerH  = Math.round(70 * sy);
+  const headerH  = Math.round(90 * sy);
   const knobH    = Math.round(160 * sy);
   const imageH   = height - headerH - knobH;
   const knobSize = Math.round(85 * sx);
@@ -22,15 +22,6 @@ export default function App() {
     backgroundColor: "#000000",
     flexDirection: "column",
     children: [
-      // DeathMetalKnob({ x: width / 5, y: height / 1.5, size: 80, parameterId: 13 }),
-      // DeathMetalKnob({ x: width / 3, y: height / 1.5, size: 80, parameterId: 13 }),
-      // DeathMetalKnob({ x: width / 2, y: height / 1.5, size: 80, parameterId: 13 }),
-      // Button({ x: width / 2 - 75, y: 80, width: 150, height: 36, label: "Load IR", onClick: () => {
-      //   openFileDialog("Load WAV IR", (path) => {
-      //     console.log("Selected file: " + path);
-      //   });
-      // }}),
-
       // ── HEADER ────────────────────────────────────────────────────
       Component({
         width,
@@ -40,49 +31,45 @@ export default function App() {
           ctx.fillStyle = "#000000";
           ctx.fillRect(0, 0, width, headerH);
 
+          // Vertical anchors derived from center
+          const cy         = headerH / 2;
+          const titleFont  = Math.round(60 * sx);
+          const subFont    = Math.round(30 * sx);
+          const titleY     = Math.round(cy + titleFont * 0.08);
+          const subtitleY  = Math.round(titleY + titleFont * 0.65);
+          const lineY      = Math.round(cy - titleFont * 0.1);
+
           // Side ornaments — HDR glow
           ctx.save();
           ctx.bloom = 1.2;
-          ctx.font = `bold ${Math.round(22 * sx)}px mb-forever-raw.regular.ttf`;
+          ctx.font = `bold ${titleFont}px mb-forever-raw.regular.ttf`;
           ctx.fillStyle = "color(srgb-linear 2.0 0.0 0.0 1.0)";
           ctx.shadowColor = "color(srgb-linear 4.0 0.0 0.0 1.0)";
           ctx.shadowBlur = Math.round(18 * sx);
-          ctx.fillText("(", Math.round(22 * sx), Math.round(46 * sy));
-          ctx.fillText(")", width - Math.round(38 * sx), Math.round(46 * sy));
-          ctx.restore();
-
-          // Horizontal rule flanking title
-          ctx.save();
-          ctx.bloom = 0.8;
-          ctx.strokeStyle = "color(srgb-linear 1.5 0.0 0.0 1.0)";
-          ctx.shadowColor = "color(srgb-linear 2.0 0.0 0.0 1.0)";
-          ctx.shadowBlur = Math.round(10 * sx);
-          ctx.lineWidth = 1;
-          const lineY = Math.round(34 * sy);
-          ctx.beginPath(); ctx.moveTo(Math.round(68 * sx), lineY); ctx.lineTo(Math.round(230 * sx), lineY); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(width - Math.round(68 * sx), lineY); ctx.lineTo(width - Math.round(230 * sx), lineY); ctx.stroke();
+          ctx.fillText("(", Math.round(102 * sx), 40);
+          ctx.fillText(")", width - Math.round(108 * sx), 40);
           ctx.restore();
 
           // Title — HDR bloom glow
           ctx.save();
           ctx.bloom = 1.8;
-          ctx.font = `bold ${Math.round(30 * sx)}px mb-forever-raw.regular.ttf`;
+          ctx.font = `bold ${titleFont}px mb-forever-raw.regular.ttf`;
           ctx.textAlign = "center";
           ctx.fillStyle = "color(srgb-linear 1.8 1.4 1.1 1.0)";
           ctx.shadowColor = "color(srgb-linear 6.0 0.0 0.0 1.0)";
           ctx.shadowBlur = Math.round(35 * sx);
-          ctx.fillText("BLACK LOUNGE", width / 2, Math.round(37 * sy));
+          ctx.fillText("BLACK LOUNGE", width / 2, titleY);
           ctx.restore();
 
           // Subtitle spaced letters
           ctx.save();
           ctx.bloom = 0.6;
-          ctx.font = `${Math.round(10 * sx)}px mb-forever-raw.regular.ttf`;
+          ctx.font = `${subFont}px mb-forever-raw.regular.ttf`;
           ctx.textAlign = "center";
           ctx.fillStyle = "color(srgb-linear 0.6 0.0 0.0 1.0)";
           ctx.shadowColor = "color(srgb-linear 1.0 0.0 0.0 1.0)";
           ctx.shadowBlur = Math.round(8 * sx);
-          ctx.fillText("A  M  P  L  I  F  I  E  R", width / 2, Math.round(56 * sy));
+          ctx.fillText("A  M  P  L  I  F  I  E  R", width / 2, subtitleY);
           ctx.restore();
 
           // Bottom glow line
@@ -109,7 +96,12 @@ export default function App() {
           ctx.fillStyle = "#000000";
           ctx.fillRect(0, 0, width, imageH);
 
-          // ── Fire background shader ────────────────────────────────
+          // Centered square background
+          const size = imageH;
+          const ix = (width - size) / 2;
+          ctx.drawImage("./background.png", ix, 0, size, size);
+
+          // ── Fire background shader (alpha-composited over image) ────
           ctx.drawShader(`
             uniform float2 iResolution;
             uniform float  iTime;
@@ -253,15 +245,12 @@ export default function App() {
                 }
 
                 float3 col = max(fire, sparks) + smoke;
-                return half4(col, 1.0);
+                // Use brightness as alpha so dark areas are transparent
+                float alpha = clamp(max(col.r, max(col.g, col.b)) * 2.0, 0.0, 1.0);
+                return half4(col, alpha);
             }
           `, { iResolution: [width, imageH], iTime: ctx.time() },
           0, 0, width, imageH);
-
-          // Centered square — fully visible, fits the component height
-          const size = imageH;
-          const ix = (width - size) / 2;
-          // ctx.drawImage("./background.png", ix, 0, size, size);
 
           // HDR corner brackets
           ctx.save();
@@ -337,8 +326,6 @@ export default function App() {
           DeathMetalKnob({ size: 80, parameterId: 13, backgroundColor: "#000000" }),
           DeathMetalKnob({ size: 80, parameterId: 13, backgroundColor: "#000000" }),
           DeathMetalKnob({ size: 80, parameterId: 13, backgroundColor: "#000000" }),
-          // Knob({ size: 80, parameterId: 13 }),
-          // AnimatedOrb({ size: 100 }),
         ]
       }),
     ],

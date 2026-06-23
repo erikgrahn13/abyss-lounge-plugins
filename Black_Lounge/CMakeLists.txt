@@ -7,19 +7,16 @@ project(Black_Lounge
 
 singularity_create_plugin(
     ${PROJECT_NAME}
-    UI
-        main.js
     FORMATS APP VST3
     PLUGIN_CLASS BlackLounge
     PLUGIN_CLASS_HEADER "BlackLounge.h"
     RESOURCES
-        background.png
-        mb-forever-raw.regular.ttf
+        resources/background.png
+        resources/mb-forever-raw.regular.ttf
     DATA_RESOURCES
-        abyss.nam
         "../nam/jcm900 peter reamp.nam"
         "../nam/GP-OD 808  25Drive 06Tone 10Lvl.nam"
-        800_4x_2_02_MIX_RAW_V2.wav
+        data/800_4x_2_02_MIX_RAW_V2.wav
 )
 
 target_link_libraries(

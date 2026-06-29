@@ -23,13 +23,19 @@ target_link_libraries(Amp PUBLIC
 
 target_compile_definitions(Amp PUBLIC NAM_SAMPLE_FLOAT)
 
-target_compile_options(Amp PRIVATE -fPIC)
+if(NOT MSVC)
+    target_compile_options(Amp PRIVATE -fPIC)
+endif()
 
 # Any target that links Amp must include all its TUs so static initializers
 # that register NAM architecture parsers (e.g. SlimmableContainer) run.
 if(APPLE)
     target_link_options(Amp INTERFACE
         -Wl,-force_load,$<TARGET_LINKER_FILE:Amp>
+    )
+elseif(MSVC)
+    target_link_options(Amp INTERFACE
+        /WHOLEARCHIVE:$<TARGET_LINKER_FILE:Amp>
     )
 else()
     target_link_options(Amp INTERFACE

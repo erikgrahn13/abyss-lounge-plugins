@@ -27,11 +27,17 @@ target_compile_options(Amp PRIVATE -fPIC)
 
 # Any target that links Amp must include all its TUs so static initializers
 # that register NAM architecture parsers (e.g. SlimmableContainer) run.
-target_link_options(Amp INTERFACE
-    -Wl,--whole-archive
-    $<TARGET_LINKER_FILE:Amp>
-    -Wl,--no-whole-archive
-)
+if(APPLE)
+    target_link_options(Amp INTERFACE
+        -Wl,-force_load,$<TARGET_LINKER_FILE:Amp>
+    )
+else()
+    target_link_options(Amp INTERFACE
+        -Wl,--whole-archive
+        $<TARGET_LINKER_FILE:Amp>
+        -Wl,--no-whole-archive
+    )
+endif()
 
 target_include_directories(Amp PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}

@@ -14,8 +14,8 @@ singularity_create_plugin(
         resources/background.png
         resources/mb-forever-raw.regular.ttf
     DATA_RESOURCES
-        "../nam/jcm900 peter reamp.nam"
-        "../nam/GP-OD 808  25Drive 06Tone 10Lvl.nam"
+        # "../nam/jcm900 peter reamp.nam"
+        # "../nam/GP-OD 808  25Drive 06Tone 10Lvl.nam"
         data/800_4x_2_02_MIX_RAW_V2.wav
 )
 

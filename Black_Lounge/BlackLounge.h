@@ -17,9 +17,9 @@ public:
     }
 
     void prepare(double sampleRate, int maxBlockSize) {
-        blackLoungeAmp_ = std::make_unique<Amp>(singularity_data::jcm900_peter_reamp_nam.data, singularity_data::jcm900_peter_reamp_nam.size,
-                                                singularity_data::_800_4x_2_02_MIX_RAW_V2_wav.data, singularity_data::_800_4x_2_02_MIX_RAW_V2_wav.size);
-        blackLoungeOverDrive_ = std::make_unique<Amp>(singularity_data::GP_OD_808__25Drive_06Tone_10Lvl_nam.data, singularity_data::GP_OD_808__25Drive_06Tone_10Lvl_nam.size);
+        // blackLoungeAmp_ = std::make_unique<Amp>(singularity_data::jcm900_peter_reamp_nam.data, singularity_data::jcm900_peter_reamp_nam.size,
+        //                                         singularity_data::_800_4x_2_02_MIX_RAW_V2_wav.data, singularity_data::_800_4x_2_02_MIX_RAW_V2_wav.size);
+        // blackLoungeOverDrive_ = std::make_unique<Amp>(singularity_data::GP_OD_808__25Drive_06Tone_10Lvl_nam.data, singularity_data::GP_OD_808__25Drive_06Tone_10Lvl_nam.size);
     }
 
     template<typename SampleType>

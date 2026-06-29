@@ -290,43 +290,48 @@ export default function App() {
           ctx.stroke();
           ctx.restore();
 
-          // Vertical separators
+          // Vertical separators between columns
           ctx.save();
           ctx.bloom = 1.2;
           ctx.lineWidth = 1.5;
           ctx.strokeStyle = "color(srgb-linear 4.0 0.0 0.0 1.0)";
           ctx.shadowColor = "color(srgb-linear 3.5 0.0 0.0 1.0)";
           ctx.shadowBlur = Math.round(16 * sx);
-          const gap = (width - 3 * knobSize) / 4;
-          const sep1 = gap + knobSize + gap / 2;
-          const sep2 = sep1 + knobSize + gap;
-          ctx.beginPath(); ctx.moveTo(sep1, Math.round(10 * sy)); ctx.lineTo(sep1, Math.round(145 * sy)); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(sep2, Math.round(10 * sy)); ctx.lineTo(sep2, Math.round(145 * sy)); ctx.stroke();
-          ctx.restore();
-
-          // Knob labels
-          ctx.save();
-          ctx.bloom = 0.5;
-          ctx.font = `bold ${Math.round(20 * sx)}px mb-forever-raw.regular.ttf`;
-          ctx.textAlign = "center";
-          ctx.fillStyle = "color(srgb-linear 0.8 0.6 0.5 1.0)";
-          ctx.shadowColor = "color(srgb-linear 1.5 0.0 0.0 1.0)";
-          ctx.shadowBlur = Math.round(6 * sx);
-          const labels = ["DENOISER", "GAIN", "VOLUME"];
-          for (let i = 0; i < labels.length; i++) {
-            const x = gap + knobSize / 2 + i * (gap + knobSize);
-            ctx.fillText(labels[i], x, Math.round(153 * sy));
-          }
+          const colW = Math.round(width / 3);
+          ctx.beginPath(); ctx.moveTo(colW,     Math.round(10 * sy)); ctx.lineTo(colW,     knobH - Math.round(8 * sy)); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(colW * 2, Math.round(10 * sy)); ctx.lineTo(colW * 2, knobH - Math.round(8 * sy)); ctx.stroke();
           ctx.restore();
         },
         flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
         children: [
-          DeathMetalKnob({ size: 80, parameterId: 13, backgroundColor: "#000000" }),
-          DeathMetalKnob({ size: 80, parameterId: 13, backgroundColor: "#000000" }),
-          DeathMetalKnob({ size: 80, parameterId: 13, backgroundColor: "#000000" }),
-        ]
+          ...["DENOISER", "GAIN", "VOLUME"].map((label, i) =>
+            Component({
+              width: Math.round(width / 3),
+              height: knobH,
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              children: [
+                DeathMetalKnob({ size: 70, parameterId: 13, backgroundColor: "#000000" }),
+                Component({
+                  width: Math.round(width / 3),
+                  height: Math.round(30 * sy),
+                  draw(ctx) {
+                    ctx.save();
+                    ctx.bloom = 0.5;
+                    ctx.font = `bold ${Math.round(40 * sx)}px mb-forever-raw.regular.ttf`;
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = "color(srgb-linear 0.8 0.6 0.5 1.0)";
+                    ctx.shadowColor = "color(srgb-linear 1.5 0.0 0.0 1.0)";
+                    ctx.shadowBlur = Math.round(6 * sx);
+                    ctx.fillText(label, Math.round(width / 3 / 2), Math.round(28 * sy));
+                    ctx.restore();
+                  },
+                }),
+              ],
+            })
+          ),
+        ],
       }),
     ],
   });

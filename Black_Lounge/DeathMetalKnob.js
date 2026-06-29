@@ -9,7 +9,7 @@ function valueToAngle(val) {
     return startAngle + val * (endAngle - startAngle);
 }
 
-export function DeathMetalKnob({ x, y, size = 80, parameterId, padding = 10, backgroundColor = "#000000" }) {
+export function DeathMetalKnob({ x, y, size = 80, parameterId, padding = 7.5, backgroundColor = "#000000" }) {
     return Knob({
         x, y, size, parameterId, backgroundColor,
         draw: (ctx, { value, size }) => {

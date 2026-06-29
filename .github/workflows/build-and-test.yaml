@@ -1,0 +1,201 @@
+name: Audio Development
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build plugins
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2-dev libx11-dev libxrandr-dev libxinerama-dev \
+            libxcursor-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev \
+            libfreetype6-dev libfontconfig1-dev ninja-build \
+            libportal-dev libpipewire-0.3-dev
+          
+      - name: Enter MSVC dev environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+          
+      - name: Build
+        run: |
+          cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+      
+  #     - name: Install plugins (Windows)
+  #       if: matrix.os == 'windows-latest'
+  #       shell: pwsh
+  #       run: |
+  #         cd build
+          
+  #         # Install all .exe files from the installers directory
+  #         if (Test-Path "installers") {
+  #           Get-ChildItem -Path "installers" -Filter "*.exe" | ForEach-Object {
+  #             $installerPath = $_.FullName
+  #             Write-Host "Installing: $($_.Name)"
+  #             Write-Host "Full path: $installerPath"
+
+  #             $process = Start-Process -FilePath $installerPath -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CLOSEAPPLICATIONS", "/LOG" -Wait -PassThru
+
+  #             # Check for installation logs
+  #             Write-Host "Checking for installer logs..."
+
+  #             # Check for Inno Setup log files (created by /LOG parameter)
+  #             $logPattern = $env:TEMP + "\Setup Log*.txt"
+  #             Get-ChildItem $env:TEMP -Filter "Setup Log*.txt" -ErrorAction SilentlyContinue | ForEach-Object {
+  #               Write-Host "Found Inno Setup log: $($_.FullName)"
+  #               Write-Host "Log contents (last 30 lines):"
+  #               Get-Content $_.FullName -Tail 30 | ForEach-Object { Write-Host "  $_" }
+  #             }
+  #           }
+  #         } else {
+  #           Write-Host "No installers directory found"
+  #           exit 0
+  #         }
+  #     - name: Install plugins (macOS)
+  #       if: matrix.os == 'macos-latest'
+  #       run: |
+  #         cd build
+
+  #         # Install all .pkg files from the installers directory
+  #         if [ -d "installers" ]; then
+  #           find installers -name "*.pkg" -maxdepth 1 | while read pkg_file; do
+  #             echo "Installing: $pkg_file"
+              
+  #             # Install the package
+  #             sudo installer -pkg "$pkg_file" -target / -verbose
+              
+  #             # Check if installer succeeded
+  #             if [ $? -eq 0 ]; then
+  #               echo "✅ $(basename "$pkg_file") installed successfully"
+  #             else
+  #               echo "❌ Failed to install $(basename "$pkg_file")"
+  #               exit 1
+  #             fi
+  #           done
+  #         else
+  #           echo "No installers directory found"
+  #           exit 0
+  #         fi
+
+  #         # Kill AudioComponentRegistrar if running
+  #         pgrep -x AudioComponentRegistrar >/dev/null && killall -9 AudioComponentRegistrar; echo "killed AudioComponentRegistrar" || echo "AudioComponentRegistrar Process not found"
+        
+  #     - name: Install plugins (Linux)
+  #       if: matrix.os == 'ubuntu-latest'
+  #       run: |
+  #         cd build
+          
+  #         # Install all .tar.gz files from the installers directory
+  #         if [ -d "installers" ]; then
+  #           for tarball_file in installers/*.tar.gz; do
+  #             if [ -f "$tarball_file" ]; then
+  #               echo "Processing: $tarball_file"
+                
+  #               # Extract the tarball
+  #               tar -xzf "$tarball_file"
+                
+  #               # Get the extracted directory name
+  #               extracted_dir=$(basename "$tarball_file" .tar.gz)
+                
+  #               # Change to extracted directory and run install script
+  #               cd "$extracted_dir"
+                
+  #               if [ -f "install.sh" ]; then
+  #                 echo "Running install script for $(basename "$tarball_file")..."
+  #                 echo "=========================================="
+  #                 ./install.sh
+  #                 echo "=========================================="
+  #                 echo "Install script completed."
+  #               else
+  #                 echo "❌ No install.sh found in $extracted_dir"
+  #                 exit 1
+  #               fi
+                
+  #               # Go back to build directory
+  #               cd ..
+                
+  #               # Extract plugin name for verification
+  #               plugin_name=$(basename "$tarball_file" | sed 's/-[0-9].*\.tar\.gz$//')
+                
+  #               # Simple verification - just check if files exist
+  #               echo "Verifying installation..."
+  #               vst3_found=false
+  #               standalone_found=false
+                
+  #               # Check for VST3
+  #               if find "$HOME/.vst3" -name "*.vst3" -type d 2>/dev/null | grep -q .; then
+  #                 vst3_found=true
+  #                 echo "✅ VST3 plugin found in ~/.vst3"
+  #               else
+  #                 echo "❌ No VST3 plugin found in ~/.vst3"
+  #               fi
+                
+  #               # Check for standalone (optional)
+  #               if find "$HOME/.local/bin" -name "*" -type f -executable 2>/dev/null | grep -qi "$plugin_name\|black.*lounge"; then
+  #                 standalone_found=true
+  #                 echo "✅ Standalone app found in ~/.local/bin"
+  #               else
+  #                 echo "ℹ️ No standalone app found in ~/.local/bin (may not be built for this plugin)"
+  #               fi
+                
+  #               # Final verification - only VST3 is required
+  #               if [ "$vst3_found" = true ]; then
+  #                 echo "✅ Installation verification passed for $plugin_name"
+  #               else
+  #                 echo "❌ Installation verification failed for $plugin_name"
+  #                 exit 1
+  #               fi
+                
+  #               echo "----------------------------------------"
+  #             fi
+  #           done
+  #         else
+  #           echo "No installers directory found"
+  #           exit 0
+  #         fi
+
+  #     - name: Run Tests
+  #       run: ctest --preset Release
+
+  #     - name: Upload build artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: build-${{matrix.os}}
+  #         path: |
+  #           build/**/*_artefacts/Release/AU/*
+  #           build/**/*_artefacts/Release/Standalone/*
+  #           build/**/*_artefacts/Release/VST3/*
+  #           build/installers
+  #           !build/**/_CPack_Packages
+  #           !build/_deps/**
+  #           !build/bin/**
+  #           !build/CMakeFiles/**
+  # generate-docs:
+  #   name: Verify Doxygen documentation generation
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+        
+  #     - name: Configure Doxygen
+  #       run: cmake --preset Docs
+
+  #     - name: Generate Documentation
+  #       run: cmake --build --preset Docs

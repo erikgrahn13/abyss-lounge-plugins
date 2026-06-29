@@ -24,3 +24,5 @@ target_link_libraries(
     PUBLIC
     Amp
 )
+
+enable_plugin_testing(${PROJECT_NAME})
